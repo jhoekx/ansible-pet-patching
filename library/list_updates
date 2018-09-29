@@ -1,0 +1,48 @@
+#!/usr/bin/python
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+# Ansible module to list all packages with updates
+
+from ansible.module_utils.basic import AnsibleModule
+
+
+def process_query(data):
+    for line in data.splitlines():
+        parts = line.split('|')
+        yield {
+            'name': parts[0],
+            'version': parts[2],
+            'release': parts[3],
+            'arch': parts[4],
+        }
+
+
+def to_list(gen):
+    return [item for item in gen]
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(),
+        supports_check_mode=True,
+    )
+
+    changed = False
+
+    code, out, _ = module.run_command(
+        'repoquery --qf "%{name}|%{epoch}|%{version}|%{release}|%{arch}|%{repoid}" --pkgnarrow=installed --all')
+    if code != 0:
+        module.fail_json(msg='Faild to query installed packages')
+    installed = to_list(process_query(out))
+
+    code, out, _ = module.run_command(
+        'repoquery --qf "%{name}|%{epoch}|%{version}|%{release}|%{arch}|%{repoid}" --pkgnarrow=updates --all')
+    if code != 0:
+        module.fail_json(msg='Faild to query installed packages')
+    updates = to_list(process_query(out))
+
+    module.exit_json(changed=changed, installed=installed, updates=updates)
+
+
+if __name__ == '__main__':
+    main()

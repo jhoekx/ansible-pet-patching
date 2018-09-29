@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+<form method="POST">
+    <p>
+        {% if group_name is not none %}
+        <label>Group name: <input type="text" name="group-name" value="{{ group_name }}"></label>
+        {% else %}
+        <label>Group name: <input type="text" name="group-name"></label>
+        {% endif %}
+        <input type="submit" value="Query">
+    </p>
+</form>
+
+{% if results|count > 0 %}
+<table>
+    <tr>
+        <th>Hostname</th>
+        <th>Installed</th>
+        <th>Updates</th>
+    </tr>
+    {% for result in results|sort(attribute='hostname') %}
+    {% if result.updates|count == 0 %}
+    <tr class="uptodate">
+    {% else %}
+    <tr>
+    {% endif %}
+        <td>{{ result.hostname }}</td>
+        <td>{{ result.installed|count }}</td>
+        <td>{{ result.updates|count }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+{% endblock %}
