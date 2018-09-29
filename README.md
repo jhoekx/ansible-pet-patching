@@ -1,8 +1,8 @@
-= Ansible Pet Patching =
+# Ansible Pet Patching
 
 This repository contains a web application that shows the patching status of RPM based systems that are managed by Ansible.
 
-== Development ==
+## Development
 
 ```bash
 $ python -m venv env
@@ -15,7 +15,7 @@ Ansible inventory data will be searched for in the `inventory` directory.
 
 The application listens on port `5000` by default.
 
-== Docker ==
+## Docker
 
 A docker build file is provided that creates a basic container.
 
